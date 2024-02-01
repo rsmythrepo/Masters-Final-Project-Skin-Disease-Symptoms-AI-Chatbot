@@ -16,6 +16,11 @@ If you need to add any package, just add it inside `pyproject.toml`
 to the `[tool.poetry.dependencies]` section.
 Then run `poetry update`
 
+You may find some other packages need to be pip installed even after running poetry.
+pip install uvicorn
+pip install fastapi
+pip install pydantic-settings
+pip install importlib-metadata
 
 == Libraries
 
@@ -23,8 +28,10 @@ https://fastapi.tiangolo.com/[FastAPI] is one of the best libraries for building
 It has a great documentation and enables us to build
 type safe and documented APIs easily.
 
-
-
 == Data
 Use the `data/` folder to store your data.
 It will not be uploaded to any git repository.
+
+== Run the app on localhost
+cd project_code # Move into the folder where app.py is located
+uvicorn app:app --reload # Start the application on localhost
