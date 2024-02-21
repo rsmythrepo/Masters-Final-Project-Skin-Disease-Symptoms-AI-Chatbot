@@ -1,3 +1,5 @@
+from warnings import filterwarnings
+filterwarnings("ignore")
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
@@ -15,17 +17,17 @@ from sklearn.metrics import confusion_matrix
 # from tensorflow.keras import datasets, layers, models
 from keras.utils import to_categorical # used for converting labels to one-hot-encoding
 from keras.models import Sequential
+from keras.metrics import Precision, Recall
 from keras.layers import Dense, Dropout, Flatten, Conv2D, MaxPool2D, BatchNormalization
 from sklearn.model_selection import train_test_split
+
 #from scipy import stats
 from sklearn.preprocessing import LabelEncoder
 
 def ham10000_metadata(path):
-
     full_path = os.path.join(path, "data/raw/HAM10000/HAM10000_metadata.csv")
     with open(full_path) as f:
         ham10000_df = pd.read_csv(f)
-
     return ham10000_df
 
 def image_ingestion(skin_df):
@@ -40,10 +42,34 @@ def image_ingestion(skin_df):
     # Define the path and add as a new column
     skin_df['path'] = skin_df['image_id'].map(image_path.get)
 
+    return skin_df
+
+''' image pre-processing functions'''
+def image_resize(skin_df):
     # Use the path to read images
     skin_df['image'] = skin_df['path'].map(lambda x: np.asarray(Image.open(x).resize((32, 32))))
-
     return skin_df
+
+def image_normalzation(skin_df):
+    X = np.asarray(skin_df['image'].tolist())
+    images = X / 255.
+    return images
+
+def clean_images(images):
+    # Assuming 'images' is a list of image arrays
+    cleaned_images = [img for img in images if img is not None]
+    return cleaned_images
+
+def one_hot_encoding(skin_df):
+    # label encoding to numeric values from text - one hot encoding
+    le = LabelEncoder()
+    le.fit(skin_df['dx'])
+    LabelEncoder()
+    skin_df['label'] = le.transform(skin_df["dx"])
+
+    Y = skin_df['label']
+    labels = to_categorical(Y, num_classes=7)  # Convert to categorical as this is a multiclass classification problem
+    return labels
 
 def show_images(skin_df):
     for i in range(16):
@@ -54,19 +80,13 @@ def show_images(skin_df):
         plt.xlabel(skin_df['dx'][i])
     plt.show()
 
-def train_and_test_split(df):
-    # Convert the dataframe column of images into numpy array
-
-    X = np.asarray(df['image'].tolist())
-    X = X / 255.
-
-    # Assign label values to Y
-    Y = df['label']
-    Y_cat = to_categorical(Y, num_classes=7)  # Convert to categorical as this is a multiclass classification problem
+def train_and_test_split(images, labels):
+    # Features & Labels
+    X = images
+    Y = labels
 
     # Split to training and testing
-    x_train, x_test, y_train, y_test = train_test_split(X, Y_cat, test_size=0.25, random_state=42)
-
+    x_train, x_test, y_train, y_test = train_test_split(X, Y, test_size=0.25, random_state=42)
     return x_train, x_test, y_train, y_test
 
 
@@ -81,24 +101,25 @@ if __name__ == '__main__':
 
     # Get images
     skin_df = image_ingestion(metadata_df)
+    print('images')
     print(skin_df.head())
 
-    # Take a first look at the images
-    #show_images(skin_df)
+    # Resize images
+    skin_df = image_resize(skin_df)
+    print('resized')
+    print(skin_df.head())
 
-    # label encoding to numeric values from text - one hot encoding
-    le = LabelEncoder()
-    le.fit(skin_df['dx'])
-    LabelEncoder()
+    # Normalization
+    images = image_normalzation(skin_df)
 
-    print('class names:')
-    print(list(le.classes_))
+    # Clean images
+    #images = clean_images(images)
 
-    skin_df['label'] = le.transform(skin_df["dx"])
-    print(skin_df)
+    # One hot encoding of labels
+    labels = one_hot_encoding(skin_df)
 
     # Get the train and test split
-    x_train, x_test, y_train, y_test = train_and_test_split(skin_df)
+    x_train, x_test, y_train, y_test = train_and_test_split(images, labels)
 
     # Define the model.
     num_classes = 7
@@ -137,11 +158,13 @@ if __name__ == '__main__':
     model.summary()
 
     # Complile the model
-    print(model.compile(loss='categorical_crossentropy', optimizer='Adam', metrics=['acc']))
+    print(model.compile(loss='categorical_crossentropy',
+                        optimizer='Adam',
+                        metrics=['acc', Precision(), Recall()]))
 
     # Train and fit the model
     batch_size = 12
-    epochs = 50
+    epochs = 10
 
     history = model.fit(
         x_train, y_train,
@@ -152,6 +175,17 @@ if __name__ == '__main__':
 
     score = model.evaluate(x_test, y_test)
     print('Test accuracy:', score[1])
+
+    # Print the metrics
+    print("Training Accuracy:", history.history['acc'])
+    print("Training Precision:", history.history['precision'])
+    print("Training Recall:", history.history['recall'])
+    print("Training F1 Score:", history.history['f1_score'])
+
+    print("Validation Accuracy:", history.history['val_acc'])
+    print("Validation Precision:", history.history['val_precision'])
+    print("Validation Recall:", history.history['val_recall'])
+    print("Validation F1 Score:", history.history['val_f1_score'])
 
 
 
