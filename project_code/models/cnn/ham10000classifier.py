@@ -86,7 +86,7 @@ if __name__ == '__main__':
     # Take a first look at the images
     #show_images(skin_df)
 
-    # label encoding to numeric values from text
+    # label encoding to numeric values from text - one hot encoding
     le = LabelEncoder()
     le.fit(skin_df['dx'])
     LabelEncoder()
