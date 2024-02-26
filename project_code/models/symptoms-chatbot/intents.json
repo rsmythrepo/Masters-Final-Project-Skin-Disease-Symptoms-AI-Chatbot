@@ -1,0 +1,19 @@
+{"intents":[
+    {
+        "tag": "hello",
+        "patterns": ["hey", "hi", "how are you today?", "hello"],
+        "responses": ["Hey there!", "How could I help you?", "I'm good thank you! I'm here to help you"]
+    },
+    {
+        "tag": "name",
+        "patterns": ["what is your name?", "how can I call you?", "how could I call you?"],
+        "responses": ["My name is Pipino Doctorino"]
+    },
+    {
+        "tag": "medical_consultation",
+        "patterns": ["have these symptoms", "feeling bad", "have a medical consultation"],
+        "responses": ["please enter your symptoms separated by commas"]
+    }
+]
+
+}
