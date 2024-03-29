@@ -9,7 +9,7 @@ from starlette import status
 from starlette.responses import JSONResponse
 
 import project_code
-from project_code.api.endpoints import s1
+from project_code.create_database.uploader import uploader_db
 from project_code.settings import Settings
 
 logger = logging.getLogger(__name__)
@@ -38,7 +38,7 @@ uptrace.configure_opentelemetry(
     logging_level=logging.INFO,
 )
 FastAPIInstrumentor.instrument_app(app)
-app.include_router(s1)
+app.include_router(uploader_db)
 
 
 @app.get("/health", status_code=200)
