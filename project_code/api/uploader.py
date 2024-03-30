@@ -5,21 +5,16 @@ from project_code.settings import Credentials
 import io
 import pandas as pd
 import psycopg2
-from psycopg2 import sql
-import numpy as np
-import base64
-from PIL import Image
 import os
 from io import StringIO
 
 import zipfile
 import boto3
-from botocore.exceptions import NoCredentialsError
 
 
 # [x] Upload the raw data in 2 zip from repo
 # [x] Upload from 3bucket the zip an put in folder prepare data "with some space for the code"
-# [] Mix the csv and upload on the database 
+# [x] Mix the csv and upload on the database 
 
 
 uploader_db = APIRouter(
