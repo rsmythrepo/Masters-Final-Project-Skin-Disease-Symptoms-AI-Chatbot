@@ -10,15 +10,16 @@ import numpy as np
 import base64
 from PIL import Image
 import os
+from io import StringIO
 
 import zipfile
 import boto3
 from botocore.exceptions import NoCredentialsError
 
-# [] Mix the csv and upload on the database 
-# [] Upload the raw data in 2 zip from repo
-# [] Upload from 3bucket the zip an put in folder prepare data "with some space for the code"
 
+# [x] Upload the raw data in 2 zip from repo
+# [x] Upload from 3bucket the zip an put in folder prepare data "with some space for the code"
+# [] Mix the csv and upload on the database 
 
 
 uploader_db = APIRouter(
@@ -53,10 +54,9 @@ def upload_data() -> str:
     try:
         files = os.listdir(raw_data)
         for file_name in files:
-            if file_name.endswith('.zip'):
-                file_path = os.path.join(raw_data, file_name)
-                s3_file_key = f'raw_data/{file_name}'  
-                s3.upload_file(file_path, s3_bucket, s3_file_key)
+            file_path = os.path.join(raw_data, file_name)
+            s3_file_key = f'raw_data/{file_name}'  
+            s3.upload_file(file_path, s3_bucket, s3_file_key)
         
         return "Data uploaded successfully"
     
@@ -83,7 +83,7 @@ def prepare_data() -> str:
                             extracted_file_name = os.path.basename(extracted_file)
                             extracted_file_bytes = zip_ref.read(extracted_file)
 
-                            # Add your function here
+                            # Add your function here Raphaelle
                             # body = raphaelle_function(extracted_file_bytes)
 
 
@@ -96,6 +96,58 @@ def prepare_data() -> str:
         return f"Error preparing data: {str(e)}"
 
 
-@uploader_db.post("/merge_metadata")
-def merge_metadata() -> str:
-    pass
+    
+@uploader_db.post("/merge_and_upload_db")
+def create_the_database():
+    try:
+        ddi_filename = 'ddi_metadata.csv'
+        fitz_filename = 'fitzpatrick17k.csv'
+        folder_name = 'raw_data/'
+
+        # Retrieve CSV files from S3
+        ddi_csv_object = s3.get_object(Bucket=s3_bucket, Key=folder_name + ddi_filename)
+        fitz_csv_object = s3.get_object(Bucket=s3_bucket, Key=folder_name + fitz_filename)
+
+        # Read CSV contents
+        ddi_csv_content = ddi_csv_object['Body'].read().decode('utf-8')
+        fitz_csv_content = fitz_csv_object['Body'].read().decode('utf-8')
+
+        # Convert CSV contents to DataFrame
+        df_ddi = pd.read_csv(StringIO(ddi_csv_content))
+        df_fitz = pd.read_csv(StringIO(fitz_csv_content))
+
+        df_merged = pd.DataFrame(index=range(len(df_ddi) + len(df_fitz)), columns=["filename", "skin_tone", "malignant"])
+        df_merged['filename'] = df_ddi['DDI_file'].tolist() + df_fitz['md5hash'].tolist()
+        df_merged['filename'] = df_merged['filename'].apply(lambda x: x + ".jpg" if not x.endswith(".png") else x)
+
+        df_merged['skin_tone'] = df_ddi['skin_tone'].tolist() + df_fitz['fitzpatrick_scale'].tolist()
+        df_merged['skin_tone'] = df_merged['skin_tone'].replace([1, 2], 12).replace([3, 4], 34).replace([5, 6], 56)
+
+        df_merged['malignant'] = df_ddi['malignant'].tolist() + df_fitz['three_partition_label'].tolist()
+        df_merged['malignant'] = df_merged['malignant'].replace(['malignant'], True).replace(['non-neoplastic', 'benign'], False)
+
+        df_merged = df_merged[df_merged['skin_tone'] != -1]
+
+        conn = psycopg2.connect(user=user, password=password, host=host, port=port, database=database)
+        cursor = conn.cursor()
+
+        create_table_query = '''
+            CREATE TABLE IF NOT EXISTS metadata (
+                filename VARCHAR(255),
+                skin_tone INTEGER,
+                malignant BOOLEAN
+            )
+        '''
+        cursor.execute(create_table_query)
+        conn.commit()
+
+        for index, row in df_merged.iterrows():
+            cursor.execute("INSERT INTO metadata (filename, skin_tone, malignant) VALUES (%s, %s, %s)", (row['filename'], row['skin_tone'], row['malignant']))
+            conn.commit()
+        cursor.close()
+        conn.close()
+
+        return "Data merged and uploaded to database successfully"
+
+    except Exception as e:
+        return f"An error occurred: {str(e)}"
