@@ -27,9 +27,9 @@ class Settings(BaseSettings):
     telemetry_dsn: str = "http://project2_secret_token@uptrace:14317/2"
     s3_bucket: str = Field(default="provafinalproject",
                            description="Call the api like `BDI_S3_BUCKET=yourbucket poetry run uvicorn...`")
-    s3_access_key_id: str = Field(default="ASIAXB7FCAWSIJN3XVGV", description="Your S3 Access Key ID")
-    s3_secret_access_key: str = Field(default="SRxlGFnspMYcokHAszobJYcu/62j8EtYxLenC7aT", description="Your S3 Secret Access Key")
-    s3_token: str = Field(default="FwoGZXIvYXdzEO///////////wEaDHeo9yCqOfYVI1SqYSLAAWRMUp+UVs+ejf4zQOBJXLM8S6g5VZ03DnxuuiuFRmgIyNXwRz6CX69glTQvxWTnWVPEqLr4wjQp2Km7U0xaPA9rykZ7ySaWBSY1bYd111K9tcuVMSaTlVzrYn2tXASqbxnYKFMWkDSTOHmqGGp0ioCRMtxGDsdot0gEId477zkl0p9hRTy2lDCJbauXKwWUlTJhn0H6cxEG8ENlSHbfEKivVZhXUNdMRcBM/DQKLtOdaLrq8IiBhVGYHNTqHIxU8ijH75ywBjItOVFjcFpsCZu8ZwGRytTzEAfm/s0UuPjuWESrDjxu1npwfoftGwDZxvlYBr/i", description="Your S3 Token")
+    s3_access_key_id: str = Field(default="ASIAXB7FCAWSA67LV74R", description="Your S3 Access Key ID")
+    s3_secret_access_key: str = Field(default="MiHBQCq/JseEfIFrp/be1ACHJOZxFa2wOtzMgnkv", description="Your S3 Secret Access Key")
+    s3_token: str = Field(default="FwoGZXIvYXdzEPz//////////wEaDDXE98P/k+Q4E68CDiLAAT4fznPQniGWmbDXFW9YtU4FhztVLaXqkUcN+J8d1+ubHo37VVg/+YotUU/GFlmLw1k7zrgl+9C2g6TGrelMMHYzNjqdNg9j7DnGTt51deSHBuhaxm14PFfjQ+A4zwYUMN2QhseRhkeN0ylGF3SLZaYfnFtSL1m87dG+nJw9bSebDplDH65ldCW7VS88ycnofgNFlmFr1O7TRIb2+KusJdxwWVfBbbgiW8lqagb2tIGeuzyxug6oFvBuzXrVnZdedCjc4Z+wBjItIpxKI/lmj2aUu0ezA0TletFa4EBREJ7wwXVKBcotMKuzkQMj9VdVEYpz+62h", description="Your S3 Token")
 
     google_drive_token: str = Field(default="YOUR_GOOGLE_DRIVE_TOKEN", description="Your Google Drive Token")
     google_drive_folder_link: str = Field(default="YOUR_GOOGLE_DRIVE_FOLDER_LINK", description="Your Google Drive Folder Link")
