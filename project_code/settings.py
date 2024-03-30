@@ -31,8 +31,6 @@ class Settings(BaseSettings):
     s3_secret_access_key: str = Field(default="MiHBQCq/JseEfIFrp/be1ACHJOZxFa2wOtzMgnkv", description="Your S3 Secret Access Key")
     s3_token: str = Field(default="FwoGZXIvYXdzEPz//////////wEaDDXE98P/k+Q4E68CDiLAAT4fznPQniGWmbDXFW9YtU4FhztVLaXqkUcN+J8d1+ubHo37VVg/+YotUU/GFlmLw1k7zrgl+9C2g6TGrelMMHYzNjqdNg9j7DnGTt51deSHBuhaxm14PFfjQ+A4zwYUMN2QhseRhkeN0ylGF3SLZaYfnFtSL1m87dG+nJw9bSebDplDH65ldCW7VS88ycnofgNFlmFr1O7TRIb2+KusJdxwWVfBbbgiW8lqagb2tIGeuzyxug6oFvBuzXrVnZdedCjc4Z+wBjItIpxKI/lmj2aUu0ezA0TletFa4EBREJ7wwXVKBcotMKuzkQMj9VdVEYpz+62h", description="Your S3 Token")
 
-    google_drive_token: str = Field(default="YOUR_GOOGLE_DRIVE_TOKEN", description="Your Google Drive Token")
-    google_drive_folder_link: str = Field(default="YOUR_GOOGLE_DRIVE_FOLDER_LINK", description="Your Google Drive Folder Link")
     model_config = SettingsConfigDict(env_prefix='project_')
 
     @property
