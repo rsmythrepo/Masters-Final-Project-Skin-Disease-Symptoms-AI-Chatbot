@@ -33,6 +33,9 @@ requests = "^2.31.0" # python standard library for requests
 beautifulsoup4 = "4.12.2" # Used for parsing html
 pandas ="2.1.4"
 #ruff = "0.1.7"
+psycopg2 = "^2.9.9"
+pillow = "^10.2.0"
+
 
 [tool.poetry.group.dev.dependencies]
 pre-commit = "^3.5.0"
