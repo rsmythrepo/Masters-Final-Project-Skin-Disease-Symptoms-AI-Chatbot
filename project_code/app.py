@@ -1,6 +1,8 @@
 import logging
 from contextlib import asynccontextmanager
 from typing import AsyncIterator
+import os 
+import sys
 
 import uptrace
 from fastapi import FastAPI
@@ -8,8 +10,12 @@ from opentelemetry.instrumentation.fastapi import FastAPIInstrumentor
 from starlette import status
 from starlette.responses import JSONResponse
 
+current_dir = os.path.dirname(__file__)
+exercises_dir = os.path.join(current_dir, 'Masters-Final-Project-Skin-Disease-Symptoms-AI-Chatbot')
+sys.path.append(exercises_dir)
+
 import project_code
-from project_code.api.endpoints import s1
+from project_code.api.uploader import uploader_db
 from project_code.settings import Settings
 
 logger = logging.getLogger(__name__)
@@ -38,7 +44,7 @@ uptrace.configure_opentelemetry(
     logging_level=logging.INFO,
 )
 FastAPIInstrumentor.instrument_app(app)
-app.include_router(s1)
+app.include_router(uploader_db)
 
 
 @app.get("/health", status_code=200)
