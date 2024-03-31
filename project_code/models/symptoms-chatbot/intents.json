@@ -18,16 +18,13 @@
     },
     {
         "tag": "thank_you",
-        "patterns": ["thank you", "thanks", "appreciate it", "that was helpful", "thankful"
-        ],
+        "patterns": ["thank you", "thanks", "appreciate it", "that was helpful", "thankful"],
         "responses": ["You're welcome! Glad I could help.", "Anytime! Don't hesitate to ask if you have more questions.",
                       "Happy to assist! Let me know if there's anything else.", "It was my pleasure to help!"]
     },
     {
         "tag": "goodbye",
-        "patterns": [
-            "bye", "goodbye", "see you", "later", "see you later", "I have to go"
-        ],
+        "patterns": ["bye", "goodbye", "see you", "later", "see you later", "I have to go"],
         "responses": ["Goodbye! Take care.", "See you later! Hope to help you again soon.", "Bye! Feel free to return if you have more questions.",
                     "It was nice assisting you. Goodbye!"]
     }    
