@@ -1,19 +1,36 @@
 {"intents":[
     {
         "tag": "hello",
-        "patterns": ["hey", "hi", "how are you today?", "hello"],
-        "responses": ["Hey there!", "How could I help you?", "I'm good thank you! I'm here to help you"]
+        "patterns": ["hey", "hi", "how are you today?", "hello", "good day", "what's up?", "how's it going?"],
+        "responses": ["Hey there! I'm good thank you!", "Hey, how could I help you?", "I'm good thank you! I'm here to help you",
+                      "Hello! Hope you're doing well.", "Hi there! What can I assist you with?"]
     },
     {
         "tag": "name",
-        "patterns": ["what is your name?", "how can I call you?", "how could I call you?"],
-        "responses": ["My name is Pipino Doctorino"]
+        "patterns": ["what is your name?", "how can I call you?", "how could I call you?", "who are you?", "tell me your name"],
+        "responses": ["My name is DermaChat", "I go by DermaChat.", "You can call me DermaChat.", "DermaChat at your service."]
     },
     {
         "tag": "medical_consultation",
-        "patterns": ["have these symptoms", "feeling bad", "have a medical consultation"],
-        "responses": ["please enter your symptoms separated by commas"]
-    }
+        "patterns": ["have these symptoms", "feeling bad", "have a medical consultation", "not feeling well", "need medical advice"],
+        "responses": ["please enter your symptoms separated by commas", "Could you list your symptoms separated by commas for me?",
+                      "Let's try to understand what's going on. What symptoms are you experiencing (please, separate them by commas)?"]
+    },
+    {
+        "tag": "thank_you",
+        "patterns": ["thank you", "thanks", "appreciate it", "that was helpful", "thankful"
+        ],
+        "responses": ["You're welcome! Glad I could help.", "Anytime! Don't hesitate to ask if you have more questions.",
+                      "Happy to assist! Let me know if there's anything else.", "It was my pleasure to help!"]
+    },
+    {
+        "tag": "goodbye",
+        "patterns": [
+            "bye", "goodbye", "see you", "later", "see you later", "I have to go"
+        ],
+        "responses": ["Goodbye! Take care.", "See you later! Hope to help you again soon.", "Bye! Feel free to return if you have more questions.",
+                    "It was nice assisting you. Goodbye!"]
+    }    
 ]
 
 }
