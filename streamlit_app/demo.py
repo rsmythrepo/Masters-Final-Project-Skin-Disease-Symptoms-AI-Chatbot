@@ -5,7 +5,20 @@ import timm
 import torch
 import torch.nn as nn
 import torchvision.transforms as transforms
+
 from PIL import Image
+
+st.set_page_config(
+    page_title="Multipage App",
+    layout='wide'
+)
+st.title("DermaChat")
+col1, col2 = st.columns([1,1])
+
+# Col1 Left pane image processing
+col1.markdown("### Images")
+col1.write('Upload a skin lesion image for classification')
+st.sidebar.success("Select a page above.")
 
 # Function to preprocess the image
 def preprocess_image(image):
@@ -22,18 +35,17 @@ num_ftrs = model.fc.in_features
 model.fc = nn.Linear(num_ftrs, 2)
 
 # Load the state dictionary from the saved checkpoint
-checkpoint = torch.load('Xception_model.pth')
+checkpoint = torch.load('../project_code/models/cnn/Xception_model.pth')
 model.load_state_dict(checkpoint)
 
 
 # Class labels
 class_labels = ['True', 'False']  # Update with your class labels
 
-st.title("DermaChat")
-st.write('Upload a skin lesion image for classification')
+
 
 # add a button to upload an image
-uploaded_file = st.file_uploader("Choose an image...", type=["jpg", "png"])
+uploaded_file = col1.file_uploader("Choose an image...", type=["jpg", "png"])
 if uploaded_file is not None:
 
     # Convert the file to opencv image.
@@ -41,7 +53,7 @@ if uploaded_file is not None:
     img = cv2.imdecode(file_bytes, 1)
 
     # Display the uploaded image
-    st.image(img, caption='Uploaded Image', use_column_width=True)
+    col1.image(img, caption='Uploaded Image', use_column_width=True)
 
 
     # Preprocess the input image
@@ -72,11 +84,36 @@ if uploaded_file is not None:
     # Example usage
     predicted_class, prob_true, prob_false = predict(img)
 
-    print("Predicted Class:", predicted_class)
-    st.write("Predicted Class:", predicted_class)
+    # Concatenating strings and variables into a single string
+    predicted_class_text = "Predicted Class: " + str(predicted_class)
+    prob_true_text = "Probability of True: " + str(prob_true)
+    prob_false_text = "Probability of False: " + str(prob_false)
 
-    print("Probability of True:", prob_true)
-    st.write("Probability of True:", prob_true)
+    # Writing the concatenated strings to the column
+    #col1 = st.sidebar
+    col1.write(predicted_class_text)
+    col1.write(prob_true_text)
+    col1.write(prob_false_text)
 
-    print("Probability of False:", prob_false)
-    st.write("Probability of False:", prob_false)
+    #print("Predicted Class:", predicted_class)
+    #col1.write("Predicted Class:", predicted_class)
+
+    #print("Probability of True:", prob_true)
+    #col1.write("Probability of True:", prob_true)
+
+    #print("Probability of False:", prob_false)
+    #col1.write("Probability of False:", prob_false)
+
+
+# Col2 - Right pane - Chatbot
+# ToDo Chatbot code here - instead of st. use col2. to print on the left pane
+col2.markdown("### Chatbot")
+col2.write("example")
+col2.write("example")
+col2.write("example")
+
+
+# Final Report button - Fake Button
+st.button('Export Report')
+
+
