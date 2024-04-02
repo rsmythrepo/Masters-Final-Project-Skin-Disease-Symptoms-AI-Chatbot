@@ -214,8 +214,8 @@ if 'user_message' not in st.session_state:
     st.session_state.user_message = ''
 if 'user_symptoms_input' not in st.session_state:
     st.session_state.user_symptoms_input = ''
-if 'medical_consultation' not in st.session_state:
-    st.session_state.medical_consultation = False
+# if 'medical_consultation' not in st.session_state:
+#     st.session_state.medical_consultation = False
 if 'clear_symptoms' not in st.session_state:
     st.session_state.clear_symptoms = False
 if 'user_input' not in st.session_state:
@@ -223,23 +223,26 @@ if 'user_input' not in st.session_state:
 
 # Function to handle user messages and bot responses
 def handle_message():
-    if 'user_input' in st.session_state:
-        user_message = st.session_state.user_input
-        if user_message.strip() != '':
-            # Save the user message in the conversation
-            add_to_conversation("You", user_message)
+    user_message = st.session_state.user_input
+    if user_message.strip() != '':
+        # Save the user message in the conversation
+        add_to_conversation("You", user_message)
 
-            # Predict class
-            predicted_class = predict_class(user_message)
-            if predicted_class == "medical_consultation":
-                st.session_state.medical_consultation = True
-            else:
-                # Get a response and add it to the conversation
-                response = get_response(predicted_class, intents_json)
-                add_to_conversation("Bot", response)
+        # Predict class
+        predicted_class = predict_class(user_message)
+        if predicted_class == "medical_consultation":
+            st.session_state.medical_consultation = True
+        else:
+            # Get a response and add it to the conversation
+            response = get_response(predicted_class, intents_json)
+            add_to_conversation("Bot", response)
 
-            # Clear the input box after the message is handled
-            st.session_state.user_input = ''
+        # Clear the input box after the message is handled by resetting the state variable.
+        st.session_state.user_input = ''
+
+
+if 'medical_consultation' not in st.session_state:
+    st.session_state.medical_consultation = False
 
 # Callback function to clear the symptoms input
 def clear_symptoms_input():
@@ -251,7 +254,7 @@ def clear_symptoms_input():
 with col2:
     display_conversation()
     col2.markdown("### Chatbot")
-    user_input = st.text_input("You:", value=st.session_state.user_input, key="user_input")
+    user_input = st.text_input("You:", key="user_input", on_change=handle_message, value=st.session_state.user_input)
 
     # Trigger handling the message when the user presses Enter or the 'Send' button
     if st.button('Send', key='send_button'):
@@ -268,5 +271,19 @@ with col2:
             else:
                 col2.write("Please select at least two symptoms.")
     
+    # # If the state is set to start medical consultation, display the multiselect.
+    # if st.session_state.medical_consultation:
+    #     symptoms = load_data()[0]  # Assuming load_data() returns a tuple and symptoms is the first item.
+    #     selected_symptoms = st.multiselect("Select your symptoms:", symptoms, key="selected_symptoms")
+
+    #     # When the user submits their symptoms, process them.
+    #     if st.button("Submit Symptoms", key="submit_symptoms"):
+    #         if selected_symptoms:
+    #             # Process the selected symptoms...
+    #             add_to_conversation("Bot", "Processing your symptoms...")
+    #             # Reset the medical consultation flag.
+    #             st.session_state.medical_consultation = False
+    #         else:
+    #             add_to_conversation("Bot", "Please select your symptoms.")
 
 
