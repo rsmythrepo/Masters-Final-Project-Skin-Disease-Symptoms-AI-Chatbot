@@ -9,7 +9,7 @@ import torchvision.transforms as transforms
 from PIL import Image
 
 st.set_page_config(
-    page_title="Multipage App",
+    page_title="DermaChat",
     layout='wide'
 )
 st.title("DermaChat")
@@ -83,7 +83,7 @@ if uploaded_file is not None:
             probabilities = torch.sigmoid(output)[0]  # Probabilities for both classes
             prob_true = probabilities[1].item()  # Probability for the positive class (true)
             prob_false = probabilities[0].item()  # Probability for the negative class (false)
-            predicted_class = "True" if prob_true > 0.5 else "False"  # ToDo Adjust the threshold ??
+            predicted_class = "DermaChat has detected Melanoma." if prob_true > 0.5 else "DermaChat has detected little to no signs of Melanoma."  # ToDo Adjust the threshold ??
         return predicted_class, prob_true, prob_false
 
 
@@ -91,24 +91,15 @@ if uploaded_file is not None:
     predicted_class, prob_true, prob_false = predict(img)
 
     # Concatenating strings and variables into a single string
-    predicted_class_text = "Predicted Class: " + str(predicted_class)
-    prob_true_text = "Probability of True: " + str(prob_true)
-    prob_false_text = "Probability of False: " + str(prob_false)
+    predicted_class_text = str(predicted_class)
+    prob_true_text = "The probability of the input skin image being classified as malignant is: " + str(prob_true)
+    #prob_false_text = "Probability of False: " + str(prob_false)
 
     # Writing the concatenated strings to the column
     #col1 = st.sidebar
     col1.write(predicted_class_text)
     col1.write(prob_true_text)
-    col1.write(prob_false_text)
 
-    #print("Predicted Class:", predicted_class)
-    #col1.write("Predicted Class:", predicted_class)
-
-    #print("Probability of True:", prob_true)
-    #col1.write("Probability of True:", prob_true)
-
-    #print("Probability of False:", prob_false)
-    #col1.write("Probability of False:", prob_false)
 
 
 # Col2 - Right pane - Chatbot
