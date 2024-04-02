@@ -7,6 +7,7 @@ import pandas as pd
 import psycopg2
 import os
 from io import StringIO
+import json
 
 import zipfile
 import boto3
@@ -41,27 +42,93 @@ host = db_credentials.host
 port = db_credentials.port
 database = db_credentials.database
     
-@uploader_db.post("/upload_raw_data")
-def upload_data() -> str:
+@uploader_db.post("/raw_datasets")
+def upload_zip() -> str:
     # choose the path that you want Raphaelle
     raw_data = 'C:/Users/franc/BTS/final project/repositorysmith/Masters-Final-Project-Skin-Disease-Symptoms-AI-Chatbot/data/raw'
 
     try:
         files = os.listdir(raw_data)
         for file_name in files:
-            file_path = os.path.join(raw_data, file_name)
-            s3_file_key = f'raw_data/{file_name}'  
-            s3.upload_file(file_path, s3_bucket, s3_file_key)
+            if file_name.endswith('.zip'):
+                file_path = os.path.join(raw_data, file_name)
+                s3_file_key = f'raw_data/classified_images/date=27-03-2024/{file_name}'  
+                s3.upload_file(file_path, s3_bucket, s3_file_key)
         
-        return "Data uploaded successfully"
+        return "Datasets uploaded successfully"
     
     except Exception as e:
-        return f"Error uploading data: {str(e)}"
+        return f"Error uploading zip files: {str(e)}"
+    
+@uploader_db.post("/raw_metadata")
+def upload_metadata() -> str:
+    # choose the path that you want Raphaelle
+    raw_data = 'C:/Users/franc/BTS/final project/repositorysmith/Masters-Final-Project-Skin-Disease-Symptoms-AI-Chatbot/data/raw'
 
-@uploader_db.post("/prepare_data")
-def prepare_data() -> str:
     try:
-        response = s3.list_objects_v2(Bucket=s3_bucket, Prefix='raw_data/')
+        files = os.listdir(raw_data)
+        for file_name in files:
+            if file_name.endswith('.csv'):
+                file_path = os.path.join(raw_data, file_name)
+                s3_file_key = f'raw_data/metadata/date=27-03-2024/{file_name}'  
+                s3.upload_file(file_path, s3_bucket, s3_file_key)
+        
+        return "Metadata uploaded successfully"
+    
+    except Exception as e:
+        return f"Error uploading metadata: {str(e)}"
+    
+@uploader_db.post("/raw_symptoms_sheets")
+def upload_excel() -> str:
+    try:
+        file_path = 'C:/Users/franc/BTS/final project/repositorysmith/Masters-Final-Project-Skin-Disease-Symptoms-AI-Chatbot/project_code/models/symptoms-chatbot/symptoms.xlsx'
+        excel_data = pd.read_excel(file_path, sheet_name=None)
+        for sheet_name, df in excel_data.items():
+            csv_file_path = os.path.join(os.path.dirname(file_path), f"{sheet_name}.csv")
+            df.to_csv(csv_file_path, index=False)
+            s3_file_key = f'raw_data/symptoms_files/date=27-03-2024/{sheet_name}.csv'
+            s3.upload_file(csv_file_path, s3_bucket, s3_file_key)
+        
+        return "Excel file uploaded successfully"
+    except Exception as e:
+        return f"Error uploading Excel file: {str(e)}"
+
+@uploader_db.post("/raw_intents")
+def upload_intents() -> str:
+    # choose the path that you want Raphaelle
+    file_path = 'C:/Users/franc/BTS/final project/repositorysmith/Masters-Final-Project-Skin-Disease-Symptoms-AI-Chatbot/project_code/models/symptoms-chatbot/' 
+    try:
+        file_name = 'intents.json'
+        s3_file_key = f'raw_data/intents/date=27-03-2024/{file_name}'  
+        s3.upload_file(os.path.join(file_path, file_name), s3_bucket, s3_file_key)
+        
+        return "Json Data uploaded successfully"
+    
+    except Exception as e:
+        return f"Error uploading json data: {str(e)}"
+
+
+@uploader_db.post("/models")
+def upload_models():
+    # Upload the folders cnn, llm-chatbot, naive_bayes
+    base_path = 'C:/Users/franc/BTS/final project/repositorysmith/Masters-Final-Project-Skin-Disease-Symptoms-AI-Chatbot/project_code/models'
+    try:
+        folders = ['cnn', 'llm-chatbot', 'naives-bayes']  
+        for folder in folders:
+            folder_path = os.path.join(base_path, folder)
+            s3_file_key = f'models/{folder}/'  
+            for file_name in os.listdir(folder_path):
+                file_path = os.path.join(folder_path, file_name)
+                s3.upload_file(file_path, s3_bucket, s3_file_key + file_name)
+        return "Models uploaded successfully"
+    except Exception as e:
+        return f"Error uploading models: {str(e)}"
+
+
+@uploader_db.post("/prepare_images")
+def prepare_images() -> str:
+    try:
+        response = s3.list_objects_v2(Bucket=s3_bucket, Prefix='raw_data/classified_images/date=27-03-2024/')
         
         for obj in response.get('Contents', []):
             key = obj['Key']
@@ -82,7 +149,7 @@ def prepare_data() -> str:
                             # body = raphaelle_function(extracted_file_bytes)
 
 
-                            s3_file_key = f'prepared_data/{extracted_file_name}'
+                            s3_file_key = f'prepared/classified_images/date=27-03-2024/{extracted_file_name}'
                             s3.put_object(Bucket=s3_bucket, Key=s3_file_key, Body=extracted_file_bytes)
         
         return "Data prepared successfully"
@@ -90,14 +157,12 @@ def prepare_data() -> str:
     except Exception as e:
         return f"Error preparing data: {str(e)}"
 
-
-    
-@uploader_db.post("/merge_and_upload_db")
-def create_the_database():
+@uploader_db.post("/prepare_metadata")
+def prepare_metadata() -> str:
     try:
         ddi_filename = 'ddi_metadata.csv'
         fitz_filename = 'fitzpatrick17k.csv'
-        folder_name = 'raw_data/'
+        folder_name = 'raw_data/metadata/date=27-03-2024/'
 
         # Retrieve CSV files from S3
         ddi_csv_object = s3.get_object(Bucket=s3_bucket, Key=folder_name + ddi_filename)
@@ -111,7 +176,7 @@ def create_the_database():
         df_ddi = pd.read_csv(StringIO(ddi_csv_content))
         df_fitz = pd.read_csv(StringIO(fitz_csv_content))
 
-        df_merged = pd.DataFrame(index=range(len(df_ddi) + len(df_fitz)), columns=["filename", "skin_tone", "malignant"])
+        df_merged = pd.DataFrame(index=range(len(df_ddi) + len(df_fitz)), columns=["filename", "skin_tone", "malignant", "path"])
         df_merged['filename'] = df_ddi['DDI_file'].tolist() + df_fitz['md5hash'].tolist()
         df_merged['filename'] = df_merged['filename'].apply(lambda x: x + ".jpg" if not x.endswith(".png") else x)
 
@@ -121,8 +186,35 @@ def create_the_database():
         df_merged['malignant'] = df_ddi['malignant'].tolist() + df_fitz['three_partition_label'].tolist()
         df_merged['malignant'] = df_merged['malignant'].replace(['malignant'], True).replace(['non-neoplastic', 'benign'], False)
 
+        df_merged['path'] = [folder_name + ddi_filename] * len(df_ddi) + [folder_name + fitz_filename] * len(df_fitz)
+
         df_merged = df_merged[df_merged['skin_tone'] != -1]
 
+        folder_prepared = 'prepared/metadata/date=27-03-2024/'
+
+        # Convert DataFrame to CSV as bytes
+        csv_buffer = io.BytesIO()
+        df_merged.to_csv(csv_buffer, index=False)
+        csv_buffer.seek(0)  
+
+        # Upload the encoded CSV to S3
+        s3.upload_fileobj(csv_buffer, s3_bucket, folder_prepared + 'merged_metadata.csv')
+        return "Data merged successfully"
+    
+    except Exception as e:
+        return f"An error occurred: {str(e)}"
+
+
+@uploader_db.post("/metadata_database")
+def metadata_database():
+    try:
+        csv_key = 'prepared/metadata/date=27-03-2024/merged_metadata.csv'
+        
+        response_csv = s3.get_object(Bucket=s3_bucket, Key=csv_key)
+        csv_file_bytes = response_csv['Body'].read()
+        df_merged = pd.read_csv(io.BytesIO(csv_file_bytes))
+
+        # Database operations
         conn = psycopg2.connect(user=user, password=password, host=host, port=port, database=database)
         cursor = conn.cursor()
 
@@ -130,19 +222,159 @@ def create_the_database():
             CREATE TABLE IF NOT EXISTS metadata (
                 filename VARCHAR(255),
                 skin_tone INTEGER,
-                malignant BOOLEAN
+                malignant BOOLEAN,
+                path VARCHAR(255)
             )
         '''
         cursor.execute(create_table_query)
         conn.commit()
 
         for index, row in df_merged.iterrows():
-            cursor.execute("INSERT INTO metadata (filename, skin_tone, malignant) VALUES (%s, %s, %s)", (row['filename'], row['skin_tone'], row['malignant']))
+            cursor.execute("INSERT INTO metadata (filename, skin_tone, malignant, path) VALUES (%s, %s, %s, %s)",
+                            (row['filename'], row['skin_tone'], row['malignant'], row['path']))
+
             conn.commit()
+        
         cursor.close()
         conn.close()
 
-        return "Data merged and uploaded to database successfully"
-
+        return "Data stored in the database successfully"
+    
     except Exception as e:
         return f"An error occurred: {str(e)}"
+  
+@uploader_db.post("/symptoms_database")
+def symptoms_database():
+    try:
+        symptoms_df = None
+
+        response = s3.list_objects_v2(Bucket=s3_bucket, Prefix='raw_data/symptoms_files/date=27-03-2024/')
+        
+        for obj in response.get('Contents', []):
+            key = obj['Key']
+            filename = key.split('/')[-1]  
+            if filename == 'symptoms.csv':         
+                response_csv1 = s3.get_object(Bucket=s3_bucket, Key=key)
+                csv_file_bytes1 = response_csv1['Body'].read()
+                symptoms_df = pd.read_csv(io.BytesIO(csv_file_bytes1))
+            elif filename == 'symptom_Description.csv':         
+                response_csv2 = s3.get_object(Bucket=s3_bucket, Key=key)
+                csv_file_bytes2 = response_csv2['Body'].read()
+                description_df = pd.read_csv(io.BytesIO(csv_file_bytes2))
+            elif filename == 'symptom_precaution.csv':
+                response_csv3 = s3.get_object(Bucket=s3_bucket, Key=key)
+                csv_file_bytes3 = response_csv3['Body'].read()
+                precaution_df = pd.read_csv(io.BytesIO(csv_file_bytes3))
+
+        conn = psycopg2.connect(user=user, password=password, host=host, port=port, database=database)
+        cursor = conn.cursor()
+
+        # First table
+        create_table_query = '''
+            CREATE TABLE IF NOT EXISTS symptoms (
+                Disease VARCHAR(255),
+                Symptom_1 VARCHAR(255),
+                Symptom_2 VARCHAR(255),
+                Symptom_3 VARCHAR(255),
+                Symptom_4 VARCHAR(255),
+                Symptom_5 VARCHAR(255),
+                Symptom_6 VARCHAR(255),
+                Symptom_7 VARCHAR(255),
+                Symptom_8 VARCHAR(255),
+                Symptom_9 VARCHAR(255),
+                Symptom_10 VARCHAR(255),
+                Symptom_11 VARCHAR(255),
+                Symptom_12 VARCHAR(255),
+                Symptom_13 VARCHAR(255),
+                Symptom_14 VARCHAR(255),
+                Symptom_15 VARCHAR(255),
+                Symptom_16 VARCHAR(255),
+                Symptom_17 VARCHAR(255)
+            )
+        '''
+        cursor.execute(create_table_query)
+        conn.commit()
+
+        for index, row in symptoms_df.iterrows():
+            cursor.execute("INSERT INTO symptoms VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)", tuple(row))
+            conn.commit()
+
+        # Second table
+        create_table_query = '''
+            CREATE TABLE IF NOT EXISTS descriptions (
+                Disease VARCHAR(255),
+                Description TEXT
+            )
+        '''
+
+        cursor.execute(create_table_query)
+        conn.commit()
+
+        for index, row in description_df.iterrows():
+            cursor.execute("INSERT INTO descriptions VALUES (%s, %s)", (row['Disease'], row['Description']))
+            conn.commit()
+
+        # Third table
+        create_table_query = '''
+            CREATE TABLE IF NOT EXISTS precautions (
+                Disease VARCHAR(255),
+                Precaution_1 VARCHAR(255),
+                Precaution_2 VARCHAR(255),
+                Precaution_3 VARCHAR(255),
+                Precaution_4 VARCHAR(255)
+            )
+        '''
+
+        cursor.execute(create_table_query)
+        conn.commit()
+
+        for index, row in precaution_df.iterrows():
+            cursor.execute("INSERT INTO precautions VALUES (%s, %s, %s, %s, %s)", tuple(row))
+            conn.commit()
+            
+        cursor.close()
+        conn.close()
+
+        return "Data stored in the database successfully"
+    
+    except Exception as e:
+        return f"Error: {str(e)}"
+
+@uploader_db.post("/intents_database")
+def intents_database():
+    try:
+        response = s3.list_objects_v2(Bucket=s3_bucket, Prefix='raw_data/intents/date=27-03-2024/')
+        
+        for obj in response.get('Contents', []):
+            key = obj['Key']
+            if key.endswith('.json'):         
+                response_json = s3.get_object(Bucket=s3_bucket, Key=key)
+                json_file_bytes = response_json['Body'].read()
+                intents = json.loads(json_file_bytes)
+
+        conn = psycopg2.connect(user=user, password=password, host=host, port=port, database=database)
+        cursor = conn.cursor()
+
+        # Create table for intents
+        create_table_query = '''
+            CREATE TABLE IF NOT EXISTS intents (
+                tag VARCHAR(255),
+                patterns JSONB,
+                responses JSONB
+            )
+        '''
+        cursor.execute(create_table_query)
+        conn.commit()
+
+        # Insert data into intents table
+        for intent in intents['intents']:
+            cursor.execute("INSERT INTO intents (tag, patterns, responses) VALUES (%s, %s, %s)", (intent['tag'], json.dumps(intent['patterns']), json.dumps(intent['responses'])))
+            conn.commit()
+            
+        cursor.close()
+        conn.close()
+
+        return "Intents data stored in the database successfully"
+    
+    except Exception as e:
+        return f"Error: {str(e)}"

@@ -8,8 +8,28 @@ import random
 import nltk
 from nltk.stem import WordNetLemmatizer
 from keras.models import load_model
+from datetime import datetime
+import uuid
+from symptoms import bayesian_classifier, print_description, print_precautions, load_data, load_descriptions, load_precautions
+
+st.set_page_config(
+    page_title="Multipage App",
+    layout='wide'
+                )
+
+# Load data
+symptoms, diseases, adj_mat = load_data()
+df_desc = load_descriptions()
+df_prec = load_precautions()
+# Non-diagnosis responses
+non_diagnosis_responses = ['I cannot give you a possible diagnosis','Please, try it again','Please, give me more details','I do not understand what you mean']
 
 # Initialize lemmatizer, load data, and models
+
+# Load intents.json at the beginning of your script
+with open('intents.json', 'r') as file:
+    intents_json = json.load(file)
+
 lemmatizer = WordNetLemmatizer()
 intents = json.loads(open('intents.json').read())
 words = pickle.load(open('words.pkl', 'rb'))
@@ -91,47 +111,19 @@ def load_precautions():
     df_prec = pd.read_excel('symptoms.xlsx', sheet_name='symptom_precaution')
     return df_prec
 
-# Non-diagnosis responses
-non_diagnosis_responses = ['I cannot give you a possible diagnosis', 'Please, try it again', 'Please, give me more details', 'I do not understand what you mean']
-
-# Bayesian classifier
-def bayesian_classifier(adj_mat, symptom_list, symptoms, diseases):
-    # Remove special characters from symptoms
-    cleaned_symptom_list = [re.sub(r'[:;¿?¡!-]', '', s).strip().lower() for s in symptom_list]
-
-    # Convert cleaned symptoms to indices
-    sym = [symptoms.index(s) for s in cleaned_symptom_list if s in symptoms]
-
-    p_dis = adj_mat.sum(axis=0) / adj_mat.sum()
-    p_sym = adj_mat.sum(axis=1) / adj_mat.sum()
-    dist = []
-
-    for i in range(len(diseases)):
-        # Compute the Bayes probability
-        prob = np.prod((adj_mat[:,i] / adj_mat[:,i].sum())[sym]) * p_dis[i] / np.prod(p_sym[sym])
-        dist.append(prob)
-    
-    if sum(dist) == 0:
-        return non_diagnosis_responses[random.randrange(4)]
-    else:
-        idx = dist.index(max(dist))
-        return diseases[idx]
-
-# Print precautions
 def print_precautions(diseases, df_prec):
     precautions = df_prec[df_prec['Disease'].str.lower() == diseases.lower()].iloc[0]
     st.write('Recommended precautions:')
     for i in range(1, 5):
         st.write(f"- {precautions[f'Precaution_{i}']}")
 
-# Print description
 def print_description(disease, df_desc):
     desc = df_desc['Disease'].str.lower() == disease.lower()
     if desc.any():
         description = df_desc.loc[desc, 'Description'].iloc[0]
-        st.write(f'{description}\n')
+        st.write(f'{description}')
     else:
-        pass
+        st.write('No description available for this disease.')
 
 # Process symptoms
 def process_symptoms(user_symptoms_input):
@@ -153,10 +145,6 @@ def process_symptoms(user_symptoms_input):
     else:
         add_to_conversation("Bot", random.choice(non_diagnosis_responses))
 
-# Load data
-symptoms, diseases, adj_mat = load_data()
-df_desc = load_descriptions()
-df_prec = load_precautions()
 
 # Initialize session state
 if 'conversation' not in st.session_state:
@@ -166,39 +154,87 @@ if 'conversation' not in st.session_state:
 def add_to_conversation(speaker, message):
     st.session_state.conversation.append((speaker, message))
 
-# Display conversation history
-def display_conversation():
-    for index, (speaker, message) in enumerate(st.session_state.conversation):
-        key = f"{speaker}_{index}"  # Unique key for each message
-        if speaker == "You":
-            st.text_area("You:", value=message, height=25, disabled=True, key=key)
-        else:
-            st.text_area("Bot:", value=message, height=25, disabled=True, key=key)
-
-
 ## Streamlit app starts here
 st.title('Medical Chatbot')
 
-# Input from the user
-user_message = st.text_input("You:", key="user_input")
+# Initialize session state variables
+if 'user_message' not in st.session_state:
+    st.session_state.user_message = ''
+if 'user_symptoms_input' not in st.session_state:
+    st.session_state.user_symptoms_input = ''
+if 'medical_consultation' not in st.session_state:
+    st.session_state.medical_consultation = False
+if 'clear_symptoms' not in st.session_state:
+    st.session_state.clear_symptoms = False
 
-if user_message:
-    # Save the user message in the conversation
-    add_to_conversation("You", user_message)
+# Callback function to clear the symptoms input
+def clear_symptoms_input():
+    if 'clear_symptoms' in st.session_state and st.session_state.clear_symptoms:
+        st.session_state.user_symptoms_input = ''
+        st.session_state.clear_symptoms = False
 
-    # Predict class
-    predicted_class = predict_class(user_message)
-    
-    if predicted_class == "medical_consultation":
-        # Ask for symptoms
-        st.write("Please enter your symptoms separated by commas:")
-        user_symptoms_input = st.text_input("Symptoms:", key="symptoms_input")
-        
-        if user_symptoms_input:
-            process_symptoms(user_symptoms_input)
-    else:
-        response = get_response(predicted_class, intents)
-        add_to_conversation("Bot", response)
+# Function to add dialogue to conversation and update the state
+def add_to_conversation(role, message):
+    if 'conversation' not in st.session_state:
+        st.session_state['conversation'] = []
+    message_id = str(uuid.uuid4())  # Generate a unique identifier for the message
+    st.session_state['conversation'].append((role, message, message_id))
+
+# Function to handle user messages and bot responses
+def handle_message():
+    user_message = st.session_state.user_message
+    if user_message:
+        # Save the user message in the conversation
+        add_to_conversation("You", user_message)
+
+        # Predict class
+        predicted_class = predict_class(user_message)
+
+        if predicted_class == "medical_consultation":
+            # Indicate that medical consultation is required
+            st.session_state.medical_consultation = True
+        else:
+            # Get a response and add it to the conversation
+            response = get_response(predicted_class, intents)
+            add_to_conversation("Bot", response)
+            # Reset user_message for the next input
+            st.session_state.user_message = ''
 
 # Display the conversation history
+def display_conversation():
+    if 'conversation' in st.session_state:
+        for idx, (role, text, message_id) in enumerate(st.session_state['conversation']):
+            key = f"msg_{role}_{idx}_{message_id}"
+            st.text_area(role, value=text, height=45, disabled=True, key=key)
+
+
+# Print the dialogues
 display_conversation()
+
+user_message = st.text_input("You:", value=st.session_state.user_message, key="user_message", on_change=handle_message)
+
+# # Check if we need to ask for symptoms
+# if st.session_state.medical_consultation:
+#     st.write("Please enter your symptoms separated by commas:")
+#     # Assign a unique key for the symptoms input
+#     user_symptoms_input = st.text_input("Symptoms:", key="user_symptoms_input")
+#     # This variable will be set in the session_state by the clear_symptoms_input callback
+
+#     if user_symptoms_input:
+#         # Process symptoms and respond
+#         process_symptoms(user_symptoms_input)
+#         # Prepare to clear the input on next run
+#         st.session_state.clear_symptoms = True
+
+# Clear the symptoms input if the flag is set (this will occur on the next rerun)
+clear_symptoms_input()
+
+# Always display the conversation
+# display_conversation()
+
+
+'''
+1. side by side the input bars
+2. list instead of insert written inputs for symptoms
+3. fix the bar and the output scroll down/upper
+'''

@@ -27,9 +27,9 @@ class Settings(BaseSettings):
     telemetry_dsn: str = "http://project2_secret_token@uptrace:14317/2"
     s3_bucket: str = Field(default="provafinalproject",
                            description="Call the api like `BDI_S3_BUCKET=yourbucket poetry run uvicorn...`")
-    s3_access_key_id: str = Field(default="ASIAXB7FCAWSA67LV74R", description="Your S3 Access Key ID")
-    s3_secret_access_key: str = Field(default="MiHBQCq/JseEfIFrp/be1ACHJOZxFa2wOtzMgnkv", description="Your S3 Secret Access Key")
-    s3_token: str = Field(default="FwoGZXIvYXdzEPz//////////wEaDDXE98P/k+Q4E68CDiLAAT4fznPQniGWmbDXFW9YtU4FhztVLaXqkUcN+J8d1+ubHo37VVg/+YotUU/GFlmLw1k7zrgl+9C2g6TGrelMMHYzNjqdNg9j7DnGTt51deSHBuhaxm14PFfjQ+A4zwYUMN2QhseRhkeN0ylGF3SLZaYfnFtSL1m87dG+nJw9bSebDplDH65ldCW7VS88ycnofgNFlmFr1O7TRIb2+KusJdxwWVfBbbgiW8lqagb2tIGeuzyxug6oFvBuzXrVnZdedCjc4Z+wBjItIpxKI/lmj2aUu0ezA0TletFa4EBREJ7wwXVKBcotMKuzkQMj9VdVEYpz+62h", description="Your S3 Token")
+    s3_access_key_id: str = Field(default="ASIAXB7FCAWSAWVNTJ56", description="Your S3 Access Key ID")
+    s3_secret_access_key: str = Field(default="EMe7l8wVn+iAtXt63qQaH8LAQD3gQ93CiyE2y0fs", description="Your S3 Secret Access Key")
+    s3_token: str = Field(default="FwoGZXIvYXdzEEYaDDsrsASkq970fpvqgSLAAYci4taNtiHkEsatsEvDe1KeIaLIlj+CoWUEB8SAgkUlcfjNus9vME12XFvocAfm6zMaTpZGM3oe8u0fkn2EI6Ek2zXqO2i638oVGT1xGqLa/4JZPBVGHpX4AKpalffdwzKel+xHrjnF2SAATrA8MYIvMtYQ9Qmto6DbvTz42wWKIurvz+IIKX5ODUOn5g3qc9sbAi3ACZUqXcMG9r1URRuC4xg7wi26HKFgNM6U1T9xYpsbHGCDhqUaw45kjNN2GijI9K+wBjItTUNtjh3Td8qFC1LTOFS7WLnXjOztFSg0cEUXJopoCqORXvb59sF2Hk9ttQY5", description="Your S3 Token")
 
     model_config = SettingsConfigDict(env_prefix='project_')
 
