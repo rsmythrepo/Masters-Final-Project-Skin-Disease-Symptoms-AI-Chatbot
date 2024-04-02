@@ -18,7 +18,13 @@ col1, col2 = st.columns([1,1])
 # Col1 Left pane image processing
 col1.markdown("### Images")
 col1.write('Upload a skin lesion image for classification')
+
+# Side bar functionality
 st.sidebar.success("Select a page above.")
+
+# Export Button
+st.sidebar.button('Export Report')
+#Todo add export report functionalities here
 
 # Function to preprocess the image
 def preprocess_image(image):
@@ -53,7 +59,7 @@ if uploaded_file is not None:
     img = cv2.imdecode(file_bytes, 1)
 
     # Display the uploaded image
-    col1.image(img, caption='Uploaded Image', use_column_width=True)
+    col1.image(img, caption='Uploaded Image', use_column_width=False)
 
 
     # Preprocess the input image
@@ -113,7 +119,8 @@ col2.write("example")
 col2.write("example")
 
 
-# Final Report button - Fake Button
-st.button('Export Report')
+
+
+
 
 
