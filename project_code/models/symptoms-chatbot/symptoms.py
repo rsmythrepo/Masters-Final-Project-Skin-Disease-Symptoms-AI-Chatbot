@@ -46,6 +46,7 @@ def load_precautions():
 # Naives Bayes Classifier
 non_diagnosis_responses = ['I cannot give you a possible diagnosis','Please, try it again','Please, give me more details','I do not understand what you mean']
 
+# Bayesian classifier
 def bayesian_classifier(adj_mat, symptom_list, symptoms, diseases):
     
     # Use re.sub() to remove the special characters from each symptom in the symptom_list
@@ -54,7 +55,6 @@ def bayesian_classifier(adj_mat, symptom_list, symptoms, diseases):
     # Convert the cleaned symptom list to indices, assuming the symptoms are found in the cleaned list
     sym = [symptoms.index(s) for s in cleaned_symptom_list if s in symptoms]
 
-    # sym = [symptoms.index(s) for s in symptom_list]
     p_dis = adj_mat.sum(axis=0) / adj_mat.sum()
     p_sym = adj_mat.sum(axis=1) / adj_mat.sum()
     dist = []
@@ -70,6 +70,7 @@ def bayesian_classifier(adj_mat, symptom_list, symptoms, diseases):
         idx = dist.index(max(dist))
         return diseases[idx]
 
+# Print precautions
 def print_precautions(diseases, df_prec):
 
     precautions = df_prec[df_prec['Disease'].str.lower() == diseases.lower()].iloc[0]
@@ -77,6 +78,7 @@ def print_precautions(diseases, df_prec):
     for i in range(1, 5):
         print(f"- {precautions[f'Precaution_{i}']}")
 
+# Print description
 def print_description(disease, df_desc):
 
     desc = df_desc['Disease'].str.lower() == disease.lower()
@@ -84,7 +86,7 @@ def print_description(disease, df_desc):
         description = df_desc.loc[desc, 'Description'].iloc[0]
         print(f'{description}\n')
     else:
-        ''
+        pass
 
 # print('Please enter your symptoms separated by commas from the list below:')
 
