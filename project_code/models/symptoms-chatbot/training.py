@@ -83,7 +83,7 @@ train_process = model.fit(
     epochs=100,
     batch_size=5,
     verbose=1,
-    validation_split=0.1,  # add some validation data
+    validation_split=0.1, 
     callbacks=[early_stopping]
 )
 model.save("chatbot_model.h5", train_process)
