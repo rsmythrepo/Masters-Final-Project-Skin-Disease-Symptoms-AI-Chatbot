@@ -13,11 +13,6 @@ import zipfile
 import boto3
 
 
-# [x] Upload the raw data in 2 zip from repo
-# [x] Upload from 3bucket the zip an put in folder prepare data "with some space for the code"
-# [x] Mix the csv and upload on the database 
-
-
 uploader_db = APIRouter(
     responses={
         status.HTTP_404_NOT_FOUND: {"description": "Not found"},
@@ -44,7 +39,7 @@ database = db_credentials.database
     
 @uploader_db.post("/raw_datasets")
 def upload_zip() -> str:
-    # choose the path that you want Raphaelle
+
     raw_data = 'C:/Users/franc/BTS/final project/repositorysmith/Masters-Final-Project-Skin-Disease-Symptoms-AI-Chatbot/data/raw'
 
     try:
@@ -62,7 +57,7 @@ def upload_zip() -> str:
     
 @uploader_db.post("/raw_metadata")
 def upload_metadata() -> str:
-    # choose the path that you want Raphaelle
+
     raw_data = 'C:/Users/franc/BTS/final project/repositorysmith/Masters-Final-Project-Skin-Disease-Symptoms-AI-Chatbot/data/raw'
 
     try:
@@ -95,7 +90,7 @@ def upload_excel() -> str:
 
 @uploader_db.post("/raw_intents")
 def upload_intents() -> str:
-    # choose the path that you want Raphaelle
+
     file_path = 'C:/Users/franc/BTS/final project/repositorysmith/Masters-Final-Project-Skin-Disease-Symptoms-AI-Chatbot/project_code/models/symptoms-chatbot/' 
     try:
         file_name = 'intents.json'
@@ -110,7 +105,7 @@ def upload_intents() -> str:
 
 @uploader_db.post("/models")
 def upload_models():
-    # Upload the folders cnn, llm-chatbot, naive_bayes
+
     base_path = 'C:/Users/franc/BTS/final project/repositorysmith/Masters-Final-Project-Skin-Disease-Symptoms-AI-Chatbot/project_code/models'
     try:
         folders = ['cnn', 'llm-chatbot', 'naives-bayes']  
@@ -146,7 +141,7 @@ def prepare_images() -> str:
                             extracted_file_bytes = zip_ref.read(extracted_file)
 
                             # Add your function here Raphaelle
-                            # body = raphaelle_function(extracted_file_bytes)
+                            # body = prepare_function(extracted_file_bytes)
 
 
                             s3_file_key = f'prepared/classified_images/date=27-03-2024/{extracted_file_name}'
