@@ -27,9 +27,9 @@ class Settings(BaseSettings):
     telemetry_dsn: str = "http://project2_secret_token@uptrace:14317/2"
     s3_bucket: str = Field(default="provafinalproject",
                            description="Call the api like `BDI_S3_BUCKET=yourbucket poetry run uvicorn...`")
-    s3_access_key_id: str = Field(default="ASIAXB7FCAWSAWVNTJ56", description="Your S3 Access Key ID")
-    s3_secret_access_key: str = Field(default="EMe7l8wVn+iAtXt63qQaH8LAQD3gQ93CiyE2y0fs", description="Your S3 Secret Access Key")
-    s3_token: str = Field(default="FwoGZXIvYXdzEEYaDDsrsASkq970fpvqgSLAAYci4taNtiHkEsatsEvDe1KeIaLIlj+CoWUEB8SAgkUlcfjNus9vME12XFvocAfm6zMaTpZGM3oe8u0fkn2EI6Ek2zXqO2i638oVGT1xGqLa/4JZPBVGHpX4AKpalffdwzKel+xHrjnF2SAATrA8MYIvMtYQ9Qmto6DbvTz42wWKIurvz+IIKX5ODUOn5g3qc9sbAi3ACZUqXcMG9r1URRuC4xg7wi26HKFgNM6U1T9xYpsbHGCDhqUaw45kjNN2GijI9K+wBjItTUNtjh3Td8qFC1LTOFS7WLnXjOztFSg0cEUXJopoCqORXvb59sF2Hk9ttQY5", description="Your S3 Token")
+    s3_access_key_id: str = Field(default="ASIAXB7FCAWSMLW2T76Q", description="Your S3 Access Key ID")
+    s3_secret_access_key: str = Field(default="nHRGiLGsXVjKdDCrJKVLu9V80vqqMnTsipA6Otzf", description="Your S3 Secret Access Key")
+    s3_token: str = Field(default="IQoJb3JpZ2luX2VjEEcaCXVzLXdlc3QtMiJIMEYCIQCjdD2GVBzR7a4FRaNRxgpFuSbiDgyWhm6oeMr6K0rKCgIhALjdykqHtcNPcjQy1CMsnDx2eBXdbm55KuIBCc7PnRxyKqkCCHAQABoMNDg1Mjc0ODEzODYwIgwDqbj/1/I+2A1lckEqhgIg1XARc1V6s1nYNDLgt80iSD0rN8VhfiZsUzr71sj4Vmxx2u/P9Dek7fIe/v2EUvf9i1cHUfyQwd/tF3FZgDRw2Htbvyges6ngn0owiqIQXBSaMi1FcOXCuoV6qNADog6dOZ7ktZU76m+M11NNd22KyoCSOZd/hqg6MomWe1B46fNnsNp00mWPIKS8lvJKJ/He+6vmWN/rr5Um3AvIJ7zOGmzJsEAa9kyog8tlPJbZA77eBar0Cv9KBOIktxGFqYSmQzCV7DW9mR6eiJg4AK7yfF24IdOMuxSmKQjis+yvdR1Iq+VU0AH8ueBcA9+EmEg4YHBmWM8/tZMUR1qzQ/uweFlHX4BGMLv4s7AGOpwBdCcHz6OvL/Xxe51rtfloGVUuTyrBnG+jtWl0RBWk4YbBSK8YOz20YuPftXLcMn1bEJMl51+VynS/8YO56LpZC0hBiG6V51JkFejI8QfPv27Si/CEFtw1AhV4FD1Y+5utsc0HKfN46ULEBT5nCLyCiuINHbaiosltGB10sWwVW/S1ZkV6Wbc+FlwKicKtqTfdUpVFEAbzt6pNE36d", description="Your S3 Token")
 
     model_config = SettingsConfigDict(env_prefix='project_')
 
