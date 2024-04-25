@@ -113,7 +113,8 @@ if uploaded_file is not None:
 
 # Col2 - Right pane - Chatbot
 # ToDo Chatbot code here - instead of st. use col2. to print on the left pane
-col2.markdown("### Chatbot")
+
+#col2.markdown("### Chatbot")
 
 # Load data
 symptoms, diseases, adj_mat = load_data()
