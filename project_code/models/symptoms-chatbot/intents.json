@@ -16,13 +16,25 @@
                 "g'day",
                 "hello again",
                 "hi",
-                "hey how are you?"
+                "hey how are you?",
+                "ciao",
+                "hola como estas?",
+                "good to see you",
+                "what's up",
+                "how's it going",
+                "nice to meet you",
+                "pleased to meet you"
             ],
             "responses": [
                 "Hello! What can I help you with today?",
                 "Good to see you! What can I do for you?",
                 "Hey! Ready when you are.",
-                "Hi there! Let's chat about your day or how I can assist you."
+                "Hi there! Let's chat about your day or how I can assist you.",
+                "Hi! How can I assist you today?",
+                "Hey there! What do you need assistance with?",
+                "Hi, nice to meet you! How can I be of service?",
+                "Hello! How's your day going?",
+                "Hey! Ready to chat whenever you are."
             ]
         },
         {
@@ -41,7 +53,9 @@
                 "who are you?", 
                 "tell me your name",
                 "do you have a name?", 
-                "what should I call you?"
+                "what should I call you?",
+                "what can you do",
+                "what is your purpose"
             ],
             "responses": [
                 "You can call me DermaChat. How can I assist?",
@@ -91,7 +105,13 @@
                 "thankful",
                 "grateful",
                 "you've been a great help",
-                "cheers"
+                "cheers",
+                "you're the best",
+                "thank you",
+                "thanks",
+                "appreciate it",
+                "thank you so much",
+                "thank you very much"
             ],
             "responses": [
                 "Always here to help!",
@@ -100,7 +120,14 @@
                 "You're very welcome! I'm here whenever you need.",
                 "No problem at all, feel free to ask anything, anytime!", 
                 "Glad to be of service! Remember, I'm just a message away.",
-                "I'm happy to hear that! If you have other questions, just let me know."
+                "I'm happy to hear that! If you have other questions, just let me know.",
+                "You're welcome! Feel free to ask if you need anything else.",
+                "No problem at all! Happy to help.",
+                "Glad I could assist! Let me know if you have more questions.",
+                "You're welcome! Don't hesitate to reach out if you need assistance again.",
+                "Anytime! Let me know if there's anything else I can do for you.",
+                "No worries! I'm here to help whenever you need.",
+                "My pleasure! Feel free to ask if you have more questions."
 
             ]
         },
@@ -124,7 +151,12 @@
                 "I have to go", 
                 "catch you later",
                 "I'm off", 
-                "farewell"
+                "farewell",
+                "bye for now",
+                "take care",
+                "until next time",
+                "have a good one",
+                "so long"
             ],
             "responses": [
                 "I hope we can chat again soon. Goodbye!",
@@ -133,8 +165,84 @@
                 "Farewell! Wishing you the best until we meet again.", 
                 "Until next time! I'll be here for your next questions.", 
                 "Goodbye! Don't hesitate to return if you ever need assistance.",
-                "Take care and goodbye! It was a pleasure helping you."
+                "Take care and goodbye! It was a pleasure helping you.",
+                "Goodbye! Hope to talk to you again soon.",
+                "See you later! Have a great day!",
+                "Bye for now! Take care.",
+                "Until next time! Farewell.",
+                "Take care! Goodbye for now.",
+                "So long! Wishing you the best.",
+                "Catch you later! Have a good one.",
+                "Farewell! It was nice chatting with you."
             ]
-        }    
+        },
+        {
+            "tag": "transfer_agent",
+            "patterns": [
+              "I need to speak to a real person",
+              "can I talk to a doctor",
+              "connect me with a dermatologist"
+            ],
+            "responses": [
+              "I understand that you may need professional medical advice. While I cannot provide that directly, I can connect you with a licensed dermatologist. Actually I am sending your clinical records to a licensed dermatologist"
+            ]
+          },
+          {
+              "tag": "joke",
+              "patterns": [
+                  "tell me a joke",
+                  "what's a good joke",
+                  "can you tell a joke",
+                  "joke for me",
+                  "make me laugh"
+              ],
+              "responses": [
+                  "Why did the chicken cross the road? To get to the other side!",
+                  "Why don't scientists trust atoms? Because they make up everything!",
+                  "What do you call a belt made of watches? A waist of time!"
+              ]
+          },
+          {
+            "tag": "language_support",
+            "patterns": [
+                "what languages do you support",
+                "available languages",
+                "languages supported",
+                "which languages are available",
+                "are you available in Spanish, Russian, English, Catalan, Portuguese?"
+            ],
+            "responses": [
+                "Our service is currently available only in English."
+            ]
+          },
+          {
+              "tag": "appointment_booking",
+              "patterns": [
+                  "Can you schedule an appointment for me?",
+                  "I need to book an appointment",
+                  "Appointment booking",
+                  "Arrange a meeting with a dermatologist",
+                  "When is the next available appointment?"
+              ],
+              "responses": [
+                  "Sorry, at this moment I cannot help you with that. But I can provide your symptoms and analysis to a real dematologist"
+              ]
+          },
+          {
+              "tag": "payment_inquiry",
+              "patterns": [
+                  "How can I make a payment?",
+                  "Payment methods",
+                  "Billing information",
+                  "Cost of consultation",
+                  "Payment options"
+              ],
+              "responses": [
+                  "For payment-related inquiries, please visit our website or contact our support team."
+              ]
+          }
+          
     ]
 }
+
+
