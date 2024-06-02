@@ -2,6 +2,7 @@ import random
 import json
 import pickle
 import numpy as np
+import tensorflow as tf
 from tensorflow.keras.regularizers import l2
 
 import nltk
@@ -14,14 +15,17 @@ from tensorflow.keras.callbacks import EarlyStopping
 from tensorflow.keras.optimizers import Adam
 
 from sklearn.model_selection import train_test_split
+from sklearn.metrics import confusion_matrix, classification_report
 
 'Set the random seed for reproducibility'
-random.seed(5)
-np.random.seed(5)
+SEED = 5
+random.seed(SEED)
+np.random.seed(SEED)
+tf.random.set_seed(SEED)
 
 lemmatizer = WordNetLemmatizer()
 
-intents = json.loads(open('intents.json').read())
+intents = json.loads(open('augmented_intents.json').read())
 
 nltk.download('punkt')
 nltk.download('wordnet')
@@ -88,20 +92,20 @@ train_x, valid_x, train_y, valid_y = train_test_split(
 
 '''Creating the neural network '''
 model = Sequential()
-model.add(Dense(256, input_shape=(len(train_x[0]),), activation='relu', kernel_regularizer=l2(0.01)))       # neurons
+model.add(Dense(256, input_shape=(len(train_x[0]),), activation='relu', kernel_regularizer=l2(0.001)))       # neurons
 model.add(Dropout(0.5))
-model.add(Dense(128, activation='relu', kernel_regularizer=l2(0.01)))                                       # layers
+model.add(Dense(128, activation='relu', kernel_regularizer=l2(0.001)))                                       # layers
 model.add(Dropout(0.4))
-model.add(Dense(64, activation='relu', kernel_regularizer=l2(0.01)))                                        # layers
+model.add(Dense(64, activation='relu', kernel_regularizer=l2(0.001)))                                        # layers
 model.add(Dropout(0.3))
-model.add(Dense(32, activation='relu', kernel_regularizer=l2(0.01)))                                        # layers
+model.add(Dense(32, activation='relu', kernel_regularizer=l2(0.001)))                                        # layers
 model.add(Dropout(0.2))
 # model.add(Dense(16, activation='relu', kernel_regularizer=l2(0.01)))                                        # layers
 # model.add(Dropout(0.2))
 model.add(Dense(len(train_y[0]), activation='softmax'))
 
 '''Creating the optimizer and compile it'''
-optimizer = Adam(learning_rate=0.001)
+optimizer = Adam(learning_rate=0.0003, weight_decay = 0.001)
 model.compile(loss='categorical_crossentropy', optimizer = optimizer, metrics = ['accuracy'])
 early_stopping = EarlyStopping(monitor='val_loss', patience=20, verbose=1, restore_best_weights=True)
 
@@ -109,7 +113,7 @@ early_stopping = EarlyStopping(monitor='val_loss', patience=20, verbose=1, resto
 train_process = model.fit(
     train_x,
     train_y,
-    epochs=500,
+    epochs=1000,
     batch_size=64,
     verbose=1,
     validation_data=(valid_x, valid_y), 
@@ -132,3 +136,11 @@ test_loss, test_accuracy = model.evaluate(test_x, test_y)
 
 print("Test Loss:", test_loss)
 print("Test Accuracy:", test_accuracy)
+
+'''Predict the labels for the test set'''
+y_pred = model.predict(test_x)
+y_pred_classes = np.argmax(y_pred, axis=1)
+y_true = np.argmax(test_y, axis=1)
+
+report = classification_report(y_true, y_pred_classes, target_names=classes)
+print(report)

@@ -20,8 +20,8 @@ random.seed(SEED)
 np.random.seed(SEED)
 tf.random.set_seed(SEED)
 
-# Load intents.json
-with open('intents.json') as file:
+# Load augmented_intents.json
+with open('augmented_intents.json') as file:
     intents = json.load(file)
 
 # Extract patterns and labels from intents
@@ -67,13 +67,13 @@ model.add(Dense(labels_one_hot.shape[1], activation='softmax'))  # Adjust the ou
 # Compile the model
 optimizer = Adam(learning_rate=0.001, weight_decay = 0.001)
 model.compile(loss='categorical_crossentropy', optimizer = optimizer, metrics=['accuracy'])
-early_stopping = EarlyStopping(monitor='val_loss', patience=20, verbose=1, restore_best_weights=True)
+early_stopping = EarlyStopping(monitor='val_loss', patience=10, verbose=1, restore_best_weights=True)
 
 # Train the model
 history = model.fit(train_x, 
                     train_y, 
-                    epochs=500, 
-                    batch_size=64,
+                    epochs=100, 
+                    batch_size=32,
                     verbose=1,
                     validation_data=(valid_x, valid_y), 
                     callbacks=[early_stopping],

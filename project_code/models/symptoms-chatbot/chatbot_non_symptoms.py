@@ -11,10 +11,10 @@ from keras.models import load_model
 lemmatizer = WordNetLemmatizer()
 
 # Importing the files generated in the previous code
-intents = json.loads(open('intents.json').read())
+intents = json.loads(open('augmented_intents.json').read())
 words = pickle.load(open('words.pkl', 'rb'))
 classes = pickle.load(open('classes.pkl', 'rb'))
-model = load_model('chatbot_model.h5')
+model = load_model('chatbot_seq_bow.h5')
 
 # Ww convert the words from sentences to roots
 def clean_up_sentence(sentence):
@@ -30,7 +30,7 @@ def bag_of_words(sentence):
         for i, word in enumerate(words):
             if word == w:
                 bag[i]=1
-    print(bag)
+    # print(bag)
     return np.array(bag)
 
 # Forecasting the category what each sentence belongs
