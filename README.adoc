@@ -1,6 +1,6 @@
-Binary Classification of Skin Cancer Images 🏥
+# Binary Classification of Skin Cancer Images 
 
-# DermaChat 🏥 
+## DermaChat 🏥 
 
 ### Intro
 
